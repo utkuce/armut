@@ -1,0 +1,16 @@
+[
+{
+  "modid": "armutmod",
+  "name": "Armut Mod",
+  "description": "Armut pis agzima dus",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["utku"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
