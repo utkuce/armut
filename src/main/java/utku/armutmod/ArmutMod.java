@@ -10,6 +10,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
@@ -24,7 +26,7 @@ public class ArmutMod
     private static Logger logger;
     private static MyLogger mylogger;
 
-    private String serverAddress = "localhost:8080";
+    private String serverAddress = "localhost";
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -35,13 +37,13 @@ public class ArmutMod
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
-        // some example code
-        //logger.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
+
+        setServerAddress();
 
         mylogger = new MyLogger(logger);
 
         mylogger.info("Armut pis agzima dus");
-        mylogger.info("Getting list of mods");
+        mylogger.info("Getting list of mods from " + serverAddress);
 
         try {
             URL url = new URL("http://" + serverAddress + "/mods_list.txt");
@@ -68,6 +70,29 @@ public class ArmutMod
         mylogger.close();
     }
 
+    private void setServerAddress() {
+
+        String serverListFile = "config/armut.cfg";
+        if (Files.exists(Paths.get(serverListFile))) {
+
+            try {
+                String readAddress = readFile(serverListFile, StandardCharsets.US_ASCII);
+                if (!readAddress.isEmpty()) {
+                    serverAddress = readAddress;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+
+            try {
+                new File(serverListFile).createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void downloadMod(String modName) {
 
         mylogger.info("Downloading mod: " + modName);
@@ -83,5 +108,12 @@ public class ArmutMod
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    static String readFile(String path, Charset encoding)
+            throws IOException
+    {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
     }
 }
