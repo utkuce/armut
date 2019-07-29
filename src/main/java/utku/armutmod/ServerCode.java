@@ -41,28 +41,42 @@ public class ServerCode extends ArmutMod implements IProxy{
         try {
 
             new File("armut").mkdir();
-            listDirectoryToFile("mods", "armut/mods_list.txt");
+            FileWriter modsListTxt = new FileWriter("armut/mods_list.txt");
+            FileWriter configsListTxt = new FileWriter("armut/configs_list.txt");
 
+            mylogger.info("Writing mods to armut/mods_list.txt");
+            listDirectoryToFile("mods", modsListTxt);
+
+            mylogger.info("Writing configs to armut/configs_list.txt");
+            listDirectoryToFile("config", configsListTxt);
+
+            modsListTxt.close();
+            configsListTxt.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void listDirectoryToFile(String folderName, String outputFile) throws IOException {
+    private void listDirectoryToFile(String folderName, FileWriter outputFile) throws IOException {
 
         File folder = new File(folderName);
         File[] listOfFiles = folder.listFiles();
 
-        FileWriter fw = new FileWriter(outputFile);
+        if (listOfFiles == null)
+            return;
 
         for (File file : listOfFiles) {
+
             if (file.isFile()) {
-                fw.write(file.getName() + System.lineSeparator());
-                logger.info("Adding " + file.getName() + " to " + outputFile);
+
+                String fileFullName = folderName + "/" + file.getName();
+                outputFile.write( fileFullName + System.lineSeparator());
+                mylogger.info(" Writing file name " + fileFullName);
+
+            } else if (file.isDirectory()) {
+                listDirectoryToFile(folderName + "/" + file.getName(), outputFile);
             }
         }
-
-        fw.close();
     }
 }
