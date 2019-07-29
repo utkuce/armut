@@ -46,6 +46,7 @@ public class ClientCode extends ArmutMod implements IProxy {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                mylogger.info(e.getMessage());
             }
         } else {
 
@@ -57,16 +58,18 @@ public class ClientCode extends ArmutMod implements IProxy {
         }
     }
 
-    private void downloadMod(String modName) {
+    private void downloadFile(String remotePath) {
 
-        mylogger.info("Downloading mod: " + modName);
+        mylogger.info("Downloading file: " + serverAddress + "/" + remotePath);
+        mylogger.info("to " + System.getProperty("user.dir") + remotePath);
+        mylogger.info(System.lineSeparator());
 
         try {
 
             FileUtils.copyURLToFile(
 
-                    new URL("http://" + serverAddress + "/mods/" + modName),
-                    new File("mods/" + modName)
+                    new URL("http://" + serverAddress + "/" + remotePath), // minecraft.server/mods/modname.jar
+                    new File(remotePath) // .minecraft/mods/modname.jar
             );
 
         } catch (IOException e) {
@@ -74,7 +77,7 @@ public class ClientCode extends ArmutMod implements IProxy {
         }
     }
 
-    static String readFile(String path, Charset encoding)
+    private static String readFile(String path, Charset encoding)
             throws IOException
     {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
@@ -86,23 +89,28 @@ public class ClientCode extends ArmutMod implements IProxy {
         logger.info("Running in client mode");
 
         setServerAddress();
-
         mylogger.info("Armut pis agzima dus");
+        
+        getMods();
+        getConfigs();
+    }
+
+    private void getMods() {
         mylogger.info("Getting list of mods from " + serverAddress);
 
         try {
             URL url = new URL("http://" + serverAddress + "/armut/mods_list.txt");
             Scanner scanner = new Scanner(url.openStream());
 
-            while (scanner.hasNext()) {
-                String modName = scanner.next();
+            while (scanner.hasNextLine()) {
+                String modName = scanner.nextLine();
 
-                mylogger.info("Checking mod: " + modName);
-                if (Files.exists(Paths.get("mods/" + modName))) {
-                    mylogger.info("Mod exists, skipping download");
+                //mylogger.info("Checking mod: " + modName);
+                if (Files.exists(Paths.get("/" + modName))) {
+                    //mylogger.info("Mod exists, skipping download");
                 }
                 else {
-                    downloadMod(modName);
+                    downloadFile(modName);
                 }
 
             }
@@ -110,6 +118,26 @@ public class ClientCode extends ArmutMod implements IProxy {
 
         } catch (IOException e) {
             e.printStackTrace();
+            mylogger.info(e.getMessage());
+        }
+    }
+
+    private void getConfigs() {
+        mylogger.info("Getting list of configs from " + serverAddress);
+
+        try {
+            URL url = new URL("http://" + serverAddress + "/armut/configs_list.txt");
+            Scanner scanner = new Scanner(url.openStream());
+
+            while (scanner.hasNextLine()) {
+                String configName = scanner.nextLine();
+                downloadFile(configName);
+            }
+            scanner.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            mylogger.info(e.getMessage());
         }
     }
 }
