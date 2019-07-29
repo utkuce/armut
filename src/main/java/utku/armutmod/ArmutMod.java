@@ -22,8 +22,9 @@ public class ArmutMod
     public static final String VERSION = "0.1";
 
     private static Logger logger;
+    private static MyLogger mylogger;
 
-    String serverAddress = "localhost:8080";
+    private String serverAddress = "localhost:8080";
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -37,8 +38,10 @@ public class ArmutMod
         // some example code
         //logger.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
 
-        logger.info("Armut pis agzima dus");
-        logger.info("Getting list of mods");
+        mylogger = new MyLogger(logger);
+
+        mylogger.info("Armut pis agzima dus");
+        mylogger.info("Getting list of mods");
 
         try {
             URL url = new URL("http://" + serverAddress + "/mods_list.txt");
@@ -47,9 +50,9 @@ public class ArmutMod
             while (scanner.hasNext()) {
                 String modName = scanner.next();
 
-                logger.info("Checking mod: " + modName);
+                mylogger.info("Checking mod: " + modName);
                 if (Files.exists(Paths.get("mods/" + modName))) {
-                    logger.info("Mod exists, skipping download");
+                    mylogger.info("Mod exists, skipping download");
                 }
                 else {
                     downloadMod(modName);
@@ -61,11 +64,14 @@ public class ArmutMod
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        mylogger.close();
     }
 
     private void downloadMod(String modName) {
 
-        logger.info("Downloading mod: " + modName);
+        mylogger.info("Downloading mod: " + modName);
+
         try {
 
             FileUtils.copyURLToFile(
