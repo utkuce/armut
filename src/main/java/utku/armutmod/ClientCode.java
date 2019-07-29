@@ -91,7 +91,7 @@ public class ClientCode extends ArmutMod implements IProxy {
         mylogger.info("Getting list of mods from " + serverAddress);
 
         try {
-            URL url = new URL("http://" + serverAddress + "/mods_list.txt");
+            URL url = new URL("http://" + serverAddress + "/armut/mods_list.txt");
             Scanner scanner = new Scanner(url.openStream());
 
             while (scanner.hasNext()) {

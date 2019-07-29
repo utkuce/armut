@@ -39,7 +39,11 @@ public class ServerCode extends ArmutMod implements IProxy{
         //SimpleWebServer.main(null);
 
         try {
-            listDirectoryToFile("mods", "mods_list.txt");
+
+            new File("armut").mkdir();
+            listDirectoryToFile("mods", "armut/mods_list.txt");
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
