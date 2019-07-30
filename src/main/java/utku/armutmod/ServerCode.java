@@ -10,12 +10,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
 
 public class ServerCode extends ArmutMod implements IProxy{
+
+    final private static int PORT = 27688;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -36,8 +34,6 @@ public class ServerCode extends ArmutMod implements IProxy{
         logger.info("Running in server mode");
         logger.info("Armut pis agzima dus");
 
-        //SimpleWebServer.main(null);
-
         try {
 
             new File("armut").mkdir();
@@ -56,6 +52,13 @@ public class ServerCode extends ArmutMod implements IProxy{
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        try {
+            mylogger.info("Starting web server on port " + PORT);
+            new SimpleWebServer("localhost", PORT, new File(System.getProperty("user.dir")), true).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void listDirectoryToFile(String folderName, FileWriter outputFile) throws IOException {
@@ -71,7 +74,14 @@ public class ServerCode extends ArmutMod implements IProxy{
             if (file.isFile()) {
 
                 String fileFullName = folderName + "/" + file.getName();
-                outputFile.write( fileFullName + System.lineSeparator());
+/*
+                JSONObject obj = new JSONObject();
+                obj.put("path", fileFullName);
+                obj.put("modified", file.lastModified());
+                outputFile.write(obj  + System.lineSeparator());
+                
+ */
+                outputFile.write(fileFullName + System.lineSeparator());
                 mylogger.info(" Writing file name " + fileFullName);
 
             } else if (file.isDirectory()) {
