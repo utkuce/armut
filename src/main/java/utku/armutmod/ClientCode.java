@@ -57,6 +57,7 @@ public class ClientCode extends ArmutMod implements IProxy {
                 new File(serverListFile).createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
+                mylogger.info(e.getMessage());
             }
         }
     }
@@ -65,7 +66,7 @@ public class ClientCode extends ArmutMod implements IProxy {
 
         mylogger.info("Downloading file: " + serverAddress + "/" + remotePath);
         mylogger.info("to " + System.getProperty("user.dir") + remotePath);
-        //mylogger.info(System.lineSeparator());
+        mylogger.info(System.lineSeparator());
 
         try {
 
@@ -77,6 +78,7 @@ public class ClientCode extends ArmutMod implements IProxy {
 
         } catch (IOException e) {
             e.printStackTrace();
+            mylogger.info(e.getMessage());
         }
     }
 
@@ -94,14 +96,16 @@ public class ClientCode extends ArmutMod implements IProxy {
         setServerAddress();
         mylogger.info("Armut pis agzima dus");
 
-        mylogger.info("Getting list of mods from " + serverAddress);
-        getFiles("armut/mods_list.txt");
+        mylogger.info(System.lineSeparator());
+        mylogger.info("Syncing mod files from " + serverAddress);
+        syncFiles("armut/mods_list.txt");
 
-        mylogger.info("Getting list of configs from " + serverAddress);
-        getFiles("armut/configs_list.txt");
+        mylogger.info(System.lineSeparator());
+        mylogger.info("Syncing config files from " + serverAddress);
+        syncFiles("armut/configs_list.txt");
     }
 
-    private void getFiles(String listPath) {
+    private void syncFiles(String listPath) {
 
         try {
 
@@ -113,15 +117,23 @@ public class ClientCode extends ArmutMod implements IProxy {
                 Object obj= JSONValue.parse(scanner.nextLine());
                 JSONObject jsonObject = (JSONObject) obj;
 
-                String modName = (String) jsonObject.get("path");
+                String fileName = (String) jsonObject.get("path");
                 Long lastModified = (Long) jsonObject.get("lastModified");
 
-                //mylogger.info("Checking mod: " + modName);
-                if (Files.exists(Paths.get("/" + modName))) {
-                    //mylogger.info("Mod exists, skipping download");
+                mylogger.info("Checking file: " + fileName);
+                File f = new File(fileName);
+                if (f.exists()) {
+/*
+                    if (f.getAbsoluteFile().lastModified() < lastModified) {
+                        mylogger.info("Local file is older than server's");
+                        downloadFile(fileName);
+                    }
+
+ */
                 }
                 else {
-                    downloadFile(modName);
+                    mylogger.info("File not found, downloading...");
+                    downloadFile(fileName);
                 }
 
             }
