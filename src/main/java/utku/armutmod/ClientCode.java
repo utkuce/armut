@@ -1,11 +1,14 @@
 package utku.armutmod;
 
+import jdk.nashorn.internal.parser.JSONParser;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +65,7 @@ public class ClientCode extends ArmutMod implements IProxy {
 
         mylogger.info("Downloading file: " + serverAddress + "/" + remotePath);
         mylogger.info("to " + System.getProperty("user.dir") + remotePath);
-        mylogger.info(System.lineSeparator());
+        //mylogger.info(System.lineSeparator());
 
         try {
 
@@ -90,20 +93,28 @@ public class ClientCode extends ArmutMod implements IProxy {
 
         setServerAddress();
         mylogger.info("Armut pis agzima dus");
-        
-        getMods();
-        getConfigs();
+
+        mylogger.info("Getting list of mods from " + serverAddress);
+        getFiles("armut/mods_list.txt");
+
+        mylogger.info("Getting list of configs from " + serverAddress);
+        getFiles("armut/configs_list.txt");
     }
 
-    private void getMods() {
-        mylogger.info("Getting list of mods from " + serverAddress);
+    private void getFiles(String listPath) {
 
         try {
-            URL url = new URL("http://" + serverAddress + "/armut/mods_list.txt");
+
+            URL url = new URL("http://" + serverAddress + "/" + listPath);
             Scanner scanner = new Scanner(url.openStream());
 
             while (scanner.hasNextLine()) {
-                String modName = scanner.nextLine();
+
+                Object obj= JSONValue.parse(scanner.nextLine());
+                JSONObject jsonObject = (JSONObject) obj;
+
+                String modName = (String) jsonObject.get("path");
+                Long lastModified = (Long) jsonObject.get("lastModified");
 
                 //mylogger.info("Checking mod: " + modName);
                 if (Files.exists(Paths.get("/" + modName))) {
@@ -113,25 +124,6 @@ public class ClientCode extends ArmutMod implements IProxy {
                     downloadFile(modName);
                 }
 
-            }
-            scanner.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            mylogger.info(e.getMessage());
-        }
-    }
-
-    private void getConfigs() {
-        mylogger.info("Getting list of configs from " + serverAddress);
-
-        try {
-            URL url = new URL("http://" + serverAddress + "/armut/configs_list.txt");
-            Scanner scanner = new Scanner(url.openStream());
-
-            while (scanner.hasNextLine()) {
-                String configName = scanner.nextLine();
-                downloadFile(configName);
             }
             scanner.close();
 

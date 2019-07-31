@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -74,14 +75,13 @@ public class ServerCode extends ArmutMod implements IProxy{
             if (file.isFile()) {
 
                 String fileFullName = folderName + "/" + file.getName();
-/*
+
                 JSONObject obj = new JSONObject();
                 obj.put("path", fileFullName);
                 obj.put("modified", file.lastModified());
                 outputFile.write(obj  + System.lineSeparator());
-                
- */
-                outputFile.write(fileFullName + System.lineSeparator());
+
+                //outputFile.write(fileFullName + System.lineSeparator());
                 mylogger.info(" Writing file name " + fileFullName);
 
             } else if (file.isDirectory()) {

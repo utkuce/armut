@@ -35,7 +35,7 @@ minecraft {
 
 dependencies {
     compile 'org.nanohttpd:nanohttpd-webserver:2.3.1'
-//    compile 'com.googlecode.json-simple:json-simple:1.1.1'
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
 }
 
 processResources {
@@ -61,7 +61,7 @@ processResources {
 jar {
 
     manifest {
-        attributes 'ContainedDeps': 'nanohttpd-webserver-2.3.1.jar nanohttpd-2.3.1.jar'
+        attributes 'ContainedDeps': 'nanohttpd-webserver-2.3.1.jar nanohttpd-2.3.1.jar json-simple-1.1.1.jar'
     }
 
 }
