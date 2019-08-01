@@ -15,7 +15,7 @@ class MyLogger {
         this.logger = logger;
 
         try {
-            fw = new FileWriter("logs/armutmod.log");
+            fw = new FileWriter("logs/" + ArmutMod.MOD_ID + ".log");
         } catch (IOException e) {
             e.printStackTrace();
         }
