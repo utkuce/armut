@@ -1,7 +1,7 @@
 [
 {
-  "modid": "armutmod",
-  "name": "Armut Mod",
+  "modid": "armut",
+  "name": "Armut",
   "description": "Armut pis agzima dus",
   "version": "${version}",
   "mcversion": "${mcversion}",

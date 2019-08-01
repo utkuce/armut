@@ -13,7 +13,7 @@ public class ArmutMod implements IProxy {
     @SidedProxy(clientSide = "utku.armutmod.ClientCode", serverSide = "utku.armutmod.ServerCode")
     private static ArmutMod proxy;
 
-    static final String MOD_ID = "armutmod";
+    static final String MOD_ID = "armut";
     static final String NAME = "Armut Mod";
     static final String VERSION = "0.2.0";
 
