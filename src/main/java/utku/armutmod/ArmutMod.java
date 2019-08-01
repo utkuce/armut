@@ -7,7 +7,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = ArmutMod.MOD_ID, name = ArmutMod.NAME, version = ArmutMod.VERSION)
+@Mod(modid = ArmutMod.MOD_ID, name = ArmutMod.NAME, version = ArmutMod.VERSION, acceptableRemoteVersions = "*")
 public class ArmutMod implements IProxy {
 
     @SidedProxy(clientSide = "utku.armutmod.ClientCode", serverSide = "utku.armutmod.ServerCode")
@@ -15,7 +15,7 @@ public class ArmutMod implements IProxy {
 
     static final String MOD_ID = "armutmod";
     static final String NAME = "Armut Mod";
-    static final String VERSION = "0.1.0";
+    static final String VERSION = "0.2.0";
 
     static Logger logger;
     static MyLogger mylogger;
