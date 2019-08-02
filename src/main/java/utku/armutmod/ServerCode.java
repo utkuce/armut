@@ -54,7 +54,7 @@ public class ServerCode extends ArmutMod implements IProxy{
 
         try {
             logger.info("Starting web server on port " + PORT);
-            new SimpleWebServer("localhost", PORT, new File(System.getProperty("user.dir")), true).start();
+            new SimpleWebServer("0.0.0.0", PORT, new File(System.getProperty("user.dir")), true).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
