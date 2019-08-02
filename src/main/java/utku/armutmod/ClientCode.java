@@ -1,9 +1,14 @@
 package utku.armutmod;
 
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.io.FileUtils;
@@ -19,7 +24,8 @@ public class ClientCode extends ArmutMod implements IProxy {
 
     private String serverAddress;
     final private static short DEFAULT_PORT = 27688;
-    private Configuration config;
+    private static Configuration config;
+    final private static String configPath = "config/" + ArmutMod.MOD_ID + ".cfg";
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -30,34 +36,27 @@ public class ClientCode extends ArmutMod implements IProxy {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event)
     {
-        mylogger = new MyLogger(logger);
-
-        //this line either creates the file if it doesn't exist or opens it if it already exists.
-        config = new Configuration(new File("config/" + ArmutMod.MOD_ID + ".cfg"));
-        config.load();
-
+        config = new Configuration(new File(configPath));
         setServerAddress();
 
         if (serverAddress.isEmpty()) {
-            mylogger.info("No server address set");
+            logger.info("No server address set");
             return;
         }
 
-        clientCode(); // will only run on the client
-        mylogger.close();
+        clientCode();
     }
 
     private void setServerAddress() {
 
-        serverAddress = config.get(Configuration.CATEGORY_CLIENT, "armutServer", "127.0.0.1").getString();
+        serverAddress = getStringConfig(configPath, Configuration.CATEGORY_CLIENT, "armutServer");
         serverAddress = serverAddress + ":" + DEFAULT_PORT;
     }
 
     private void downloadFile(String remotePath) {
 
-        mylogger.info("Downloading file: " + serverAddress + "/" + remotePath);
-        mylogger.info("to " + System.getProperty("user.dir") + remotePath);
-        mylogger.info(System.lineSeparator());
+        logger.info("Downloading file: " + serverAddress + "/" + remotePath +
+                        "to " + System.getProperty("user.dir") + remotePath);
 
         try {
 
@@ -69,27 +68,25 @@ public class ClientCode extends ArmutMod implements IProxy {
 
         } catch (IOException e) {
             e.printStackTrace();
-            mylogger.info(e.getMessage());
+            logger.info(e.getMessage());
         }
     }
 
     @SideOnly(Side.CLIENT)
     private void clientCode() {
         logger.info("Running in client mode");
-        mylogger.info("Armut pis agzima dus");
+        logger.info("Armut pis agzima dus");
 
-        mylogger.info(System.lineSeparator());
-        mylogger.info("Syncing mod files from " + serverAddress);
+        logger.info("Syncing mod files from " + serverAddress);
         syncFiles("armut/mods_list.txt");
 
-        boolean downloadConfigs =
-                config.get(Configuration.CATEGORY_CLIENT, "downloadModConfigs", false)
-                        .getBoolean();
+        boolean downloadConfigs = getBooleanConfig(configPath, Configuration.CATEGORY_CLIENT, "downloadModConfigs");
+
+        logger.info("downloadConfigs=" + downloadConfigs);
 
         if (downloadConfigs) {
 
-            mylogger.info(System.lineSeparator());
-            mylogger.info("Syncing config files from " + serverAddress);
+            logger.info("Syncing config files from " + serverAddress);
             syncFiles("armut/configs_list.txt");
         }
 
@@ -111,7 +108,7 @@ public class ClientCode extends ArmutMod implements IProxy {
                 String fileName = (String) jsonObject.get("path");
                 Long lastModified = (Long) jsonObject.get("lastModified");
 
-                mylogger.info("Checking file: " + fileName);
+                logger.info("Checking file: " + fileName);
                 File f = new File(fileName);
                 if (f.exists()) {
 /*
@@ -123,7 +120,7 @@ public class ClientCode extends ArmutMod implements IProxy {
  */
                 }
                 else {
-                    mylogger.info("File not found, downloading...");
+                    logger.info("File not found, downloading...");
                     downloadFile(fileName);
                 }
 
@@ -132,21 +129,65 @@ public class ClientCode extends ArmutMod implements IProxy {
 
         } catch (IOException e) {
             e.printStackTrace();
-            mylogger.info(e.getMessage());
+            logger.info(e.getMessage());
         }
     }
 
-    /*
     @Mod.EventBusSubscriber
-    public class MyForgeEventHandler {
+    public static class MyForgeEventHandler {
 
         @SubscribeEvent
-        public void connectToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+        public static void connectToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
 
-            mylogger = new MyLogger(logger);
-            mylogger.info("Client connected to server " + event.isLocal());
-            mylogger.close();
+            logger.info("Client connected to server, (local:" + event.isLocal() +
+                    ", server address: " + Minecraft.getMinecraft().getCurrentServerData().serverIP + ")");
         }
-    }*/
+
+        @SubscribeEvent
+        public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event)
+        {
+            if (event.getModID().equals(MOD_ID)) {
+
+                logger.info("Mod config changed");
+
+                getBooleanConfig(configPath, Configuration.CATEGORY_CLIENT, "downloadModConfigs");
+                getStringConfig(configPath, Configuration.CATEGORY_CLIENT, "armutServer");
+
+                config.save();
+            }
+        }
+    }
+
+    private static String getStringConfig(String configPath, String category, String key) {
+        config = new Configuration(new File(configPath));
+        try {
+            config.load();
+            if (config.getCategory(category).containsKey(key)) {
+                return config.get(category, key, "").getString();
+            }
+        } catch (Exception e) {
+            System.out.println("Cannot load configuration file!");
+        } finally {
+            config.save();
+        }
+        return "";
+    }
+
+    private static Boolean getBooleanConfig(String configPath, String category, String key) {
+        config = new Configuration(new File(configPath));
+        try {
+            config.load();
+            if (config.getCategory(category).containsKey(key)) {
+                return config.get(category, key, false).getBoolean();
+            }
+        } catch (Exception e) {
+            System.out.println("Cannot load configuration file!");
+        } finally {
+            config.save();
+        }
+        return false;
+    }
+
+
 }
 

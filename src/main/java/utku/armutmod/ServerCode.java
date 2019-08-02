@@ -25,9 +25,7 @@ public class ServerCode extends ArmutMod implements IProxy{
     @Mod.EventHandler
     public void init(FMLInitializationEvent event)
     {
-        mylogger = new MyLogger(logger);
-        serverCode(); // will only run on the client
-        mylogger.close();
+        serverCode();
     }
 
     @SideOnly(Side.SERVER)
@@ -41,10 +39,10 @@ public class ServerCode extends ArmutMod implements IProxy{
             FileWriter modsListTxt = new FileWriter("armut/mods_list.txt");
             FileWriter configsListTxt = new FileWriter("armut/configs_list.txt");
 
-            mylogger.info("Writing mods to armut/mods_list.txt");
+            logger.info("Writing mods to armut/mods_list.txt");
             listDirectoryToFile("mods", modsListTxt);
 
-            mylogger.info("Writing configs to armut/configs_list.txt");
+            logger.info("Writing configs to armut/configs_list.txt");
             listDirectoryToFile("config", configsListTxt);
 
             modsListTxt.close();
@@ -55,7 +53,7 @@ public class ServerCode extends ArmutMod implements IProxy{
         }
 
         try {
-            mylogger.info("Starting web server on port " + PORT);
+            logger.info("Starting web server on port " + PORT);
             new SimpleWebServer("localhost", PORT, new File(System.getProperty("user.dir")), true).start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -82,7 +80,7 @@ public class ServerCode extends ArmutMod implements IProxy{
                 outputFile.write(obj  + System.lineSeparator());
 
                 //outputFile.write(fileFullName + System.lineSeparator());
-                mylogger.info(" Writing file name " + fileFullName);
+                logger.info(" Writing file name " + fileFullName);
 
             } else if (file.isDirectory()) {
                 listDirectoryToFile(folderName + "/" + file.getName(), outputFile);

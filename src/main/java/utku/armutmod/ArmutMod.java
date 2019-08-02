@@ -18,7 +18,6 @@ public class ArmutMod implements IProxy {
     static final String VERSION = "0.2.0";
 
     static Logger logger;
-    static MyLogger mylogger;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
