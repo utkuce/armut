@@ -1,7 +1,9 @@
 package utku.armutmod;
 
+import com.ibm.icu.util.ULocale;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -49,7 +51,7 @@ public class ClientCode extends ArmutMod implements IProxy {
 
     private void setServerAddress() {
 
-        serverAddress = getStringConfig(configPath, Configuration.CATEGORY_CLIENT, "armutServer");
+        serverAddress = config.get(Configuration.CATEGORY_CLIENT, "armutServer", "").getString();
         serverAddress = serverAddress + ":" + DEFAULT_PORT;
     }
 
@@ -80,7 +82,7 @@ public class ClientCode extends ArmutMod implements IProxy {
         logger.info("Syncing mod files from " + serverAddress);
         syncFiles("armut/mods_list.txt");
 
-        boolean downloadConfigs = getBooleanConfig(configPath, Configuration.CATEGORY_CLIENT, "downloadModConfigs");
+        boolean downloadConfigs = config.get(Configuration.CATEGORY_CLIENT, "downloadModConfigs", false).getBoolean();
 
         logger.info("downloadConfigs=" + downloadConfigs);
 
@@ -149,45 +151,10 @@ public class ClientCode extends ArmutMod implements IProxy {
             if (event.getModID().equals(MOD_ID)) {
 
                 logger.info("Mod config changed");
+                ConfigManager.sync(ArmutMod.MOD_ID, Config.Type.INSTANCE);
 
-                getBooleanConfig(configPath, Configuration.CATEGORY_CLIENT, "downloadModConfigs");
-                getStringConfig(configPath, Configuration.CATEGORY_CLIENT, "armutServer");
-
-                config.save();
             }
         }
     }
-
-    private static String getStringConfig(String configPath, String category, String key) {
-        config = new Configuration(new File(configPath));
-        try {
-            config.load();
-            if (config.getCategory(category).containsKey(key)) {
-                return config.get(category, key, "").getString();
-            }
-        } catch (Exception e) {
-            System.out.println("Cannot load configuration file!");
-        } finally {
-            config.save();
-        }
-        return "";
-    }
-
-    private static Boolean getBooleanConfig(String configPath, String category, String key) {
-        config = new Configuration(new File(configPath));
-        try {
-            config.load();
-            if (config.getCategory(category).containsKey(key)) {
-                return config.get(category, key, false).getBoolean();
-            }
-        } catch (Exception e) {
-            System.out.println("Cannot load configuration file!");
-        } finally {
-            config.save();
-        }
-        return false;
-    }
-
-
 }
 
