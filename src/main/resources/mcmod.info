@@ -2,7 +2,7 @@
 {
   "modid": "armut",
   "name": "Armut",
-  "description": "Armut pis agzima dus",
+  "description": "Downloads the necessary mods to join a Minecraft server, given that the server also has the armut mod installed, in other words \"Armut piş ağzıma düş\"",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
