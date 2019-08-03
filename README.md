@@ -3,7 +3,7 @@ Downloads the necessary mods to join a Minecraft server, given that the server a
 
 ## Usage
 
-Downlaod the [universal jar file](https://github.com/utkuce/armut/releases/download/v0.2.1/armut-0.2.1.jar).
+Downlaod the [latest release](https://github.com/utkuce/armut/releases/download/v0.2.1/armut-0.2.1.jar) of the universal jar.
 
 ### Client
 - Put the jar in your mods folder
