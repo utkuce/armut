@@ -18,4 +18,9 @@ public class ArmutConfig {
                      "Note that this will override any config files you may have changed"
     })
     public static Boolean downloadModConfigs = false;
+
+    @Config.Comment({"Add a list of mods to be excluded when mods are downloaded",
+                     "Entries should match the file names exactly"
+    })
+    public static String[] excludedMods = new String[]{"armut-0.3.2"};
 }

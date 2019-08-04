@@ -20,6 +20,8 @@ import org.json.simple.JSONValue;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class ClientCode extends ArmutMod implements IProxy {
@@ -107,26 +109,42 @@ public class ClientCode extends ArmutMod implements IProxy {
                 Object obj= JSONValue.parse(scanner.nextLine());
                 JSONObject jsonObject = (JSONObject) obj;
 
-                String fileName = (String) jsonObject.get("path");
+                String filePath = (String) jsonObject.get("path");
                 Long lastModified = (Long) jsonObject.get("lastModified");
 
-                logger.info("Checking file: " + fileName);
-                File f = new File(fileName);
+                String[] excludedMods = config.get(Configuration.CATEGORY_CLIENT, "excludedMods", "").getStringList();
+                String fileName = String.valueOf(Paths.get(filePath).getFileName());
+
+                if ( Arrays.asList(excludedMods).contains(fileName)) {
+                    logger.info("Skipping " + fileName + " (excluded)");
+                    continue;
+                } else {
+
+                    // if not matched try again without the .jar extension
+                    fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+
+                    if ( Arrays.asList(excludedMods).contains(fileName)) {
+                        logger.info("Skipping " + fileName + " (excluded)");
+                        continue;
+                    }
+                }
+
+                logger.info("Checking file: " + filePath);
+                File f = new File(filePath);
                 if (f.exists()) {
 /*
                     if (f.getAbsoluteFile().lastModified() < lastModified) {
                         mylogger.info("Local file is older than server's");
                         downloadFile(fileName);
                     }
-
  */
                 }
                 else {
                     logger.info("File not found, downloading...");
-                    downloadFile(fileName);
+                    downloadFile(filePath);
                 }
-
             }
+
             scanner.close();
 
         } catch (IOException e) {
