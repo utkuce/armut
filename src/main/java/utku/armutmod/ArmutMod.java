@@ -15,7 +15,7 @@ public class ArmutMod implements IProxy {
 
     static final String MOD_ID = "armut";
     static final String NAME = "Armut Mod";
-    static final String VERSION = "0.3.3";
+    static final String VERSION = "0.3.4";
 
     static Logger logger;
 
