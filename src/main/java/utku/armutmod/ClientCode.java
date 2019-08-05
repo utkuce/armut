@@ -121,12 +121,16 @@ public class ClientCode extends ArmutMod implements IProxy {
                 } else {
 
                     // if not matched try again without the .jar extension
-                    fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+                    if (fileName.lastIndexOf('.') != -1) {
 
-                    if ( Arrays.asList(excludedMods).contains(fileName)) {
-                        logger.info("Skipping " + fileName + " (excluded)");
-                        continue;
+                        fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+
+                        if ( Arrays.asList(excludedMods).contains(fileName)) {
+                            logger.info("Skipping " + fileName + " (excluded)");
+                            continue;
+                        }
                     }
+
                 }
 
                 logger.info("Checking file: " + filePath);
