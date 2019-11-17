@@ -1,9 +1,9 @@
 # armut
-Downloads the necessary mods to join a Minecraft server, given that the server also has the armut mod installed.
+Armut is a minecraft mod which automatically downloads the necessary mods to join a Minecraft server, given that the server also has the armut mod installed. Name of the project comes from the Turkish idiom "Armut piş ağzıma düş" (Fall in my mouth, baked pears) meaning to receive something without effort.
 
 ## Usage
 
-Download the [latest release](https://github.com/utkuce/armut/releases/download/v0.2.1/armut-0.2.1.jar) of the universal jar.
+Download the [latest release](https://github.com/utkuce/armut/releases/download/v0.3.4/armut-0.3.4.jar) of the universal jar.
 
 ### Client
 - Put the jar in your mods folder
